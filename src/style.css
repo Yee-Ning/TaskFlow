@@ -1,90 +1,226 @@
+/* ==================== 全局基础样式 ==================== */
+/* ==================== 全局基础样式 ==================== */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* 默认深色主题 (Dark) */
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: dark;
+  --bg-deep: #0a0a14;
+  --bg-surface: #12121e;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+  --app-bg-gradient: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a14 100%);
+  --window-bg: rgba(30, 30, 40, 0.6);
+  --window-border: rgba(255, 255, 255, 0.08);
+
+  --text-primary: #f0f0f5;
+  --text-secondary: #8b8fa3;
+  --text-muted: #5a5e72;
+
+  /* 玻璃拟态 - Dark */
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-bg-hover: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.14);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  --glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.3);
+
+  --glass-blur: 20px;
+  --glass-radius: 18px;
+  --glass-radius-sm: 12px;
+
+  /* 颜色系统 */
+  --accent: #7c6cf0;
+  --accent-light: #9d8ff5;
+  --accent-glow: rgba(124, 108, 240, 0.35);
+  --accent-gradient: linear-gradient(135deg, #7c6cf0 0%, #5b8def 100%);
+
+  color: var(--text-primary);
+  background-color: var(--bg-deep);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* 浅色主题 (Light) */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-deep: #f5f5f7;
+  --bg-surface: #ffffff;
+
+  --app-bg-gradient: radial-gradient(circle at 50% 50%, #ffffff 0%, #eef1f5 100%);
+  --window-bg: rgba(255, 255, 255, 0.45);
+  --window-border: rgba(255, 255, 255, 0.5);
+
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-muted: #a1a1a6;
+
+  /* 玻璃拟态 - Light */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-hover: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-border-hover: rgba(0, 0, 0, 0.1);
+  --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  --glass-shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.1);
+
+  --accent: #007AFF;
+  --accent-light: #5AC8FA;
+  --accent-glow: rgba(0, 122, 255, 0.2);
+  --accent-gradient: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%);
 }
-a:hover {
-  color: #535bf2;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--bg-deep);
+  overflow-x: hidden;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* 全局滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-code {
-  background-color: #1a1a1a;
-  padding: 2px 4px;
-  margin: 0 4px;
-  border-radius: 4px;
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 
-.card {
-  padding: 2em;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-  code {
-    background-color: #f9f9f9;
-  }
+/* ==================== Element Plus 全局覆盖 ==================== */
+
+/* 消息提示 */
+.el-message {
+  --el-message-bg-color: rgba(18, 18, 30, 0.9) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--glass-radius-sm) !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+/* 消息弹窗 */
+.el-message-box {
+  --el-messagebox-title-color: #1d1d1f;
+  background: rgba(255, 255, 255, 0.95) !important;
+  /* 不透明度较高的白色背景 */
+  backdrop-filter: blur(40px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.02) inset !important;
+  padding: 24px !important;
+  width: 360px !important;
+  max-width: 90vw !important;
+}
+
+.el-message-box__header {
+  padding-bottom: 8px !important;
+}
+
+.el-message-box__title {
+  color: #1d1d1f !important;
+  /* 深黑色标题 */
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.el-message-box__content {
+  color: #666666 !important;
+  /* 深灰色内容 */
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  padding: 12px 0 24px 0 !important;
+}
+
+/* 按钮容器 */
+.el-message-box__btns {
+  padding-top: 0 !important;
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: flex-end !important;
+}
+
+/* 按钮通用 */
+.el-message-box__btns .el-button {
+  border-radius: 20px !important;
+  /* 胶囊按钮 */
+  padding: 8px 20px !important;
+  height: 36px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+}
+
+/* 取消按钮 */
+.el-message-box__btns .el-button--default {
+  background: #f2f2f7 !important;
+  /* 浅灰色背景 */
+  color: #1d1d1f !important;
+}
+
+.el-message-box__btns .el-button--default:hover {
+  background: #e5e5ea !important;
+}
+
+/* 确认/删除按钮 */
+.el-message-box__btns .el-button--primary {
+  background: #007AFF !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25) !important;
+}
+
+.el-message-box__btns .el-button--primary:hover {
+  background: #006ce6 !important;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 危险操作按钮（如果有 danger 类型） */
+.el-message-box__btns .el-button--danger,
+.el-button--primary.el-button--danger {
+  background: #FF3B30 !important;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.25) !important;
+}
+
+.el-message-box__btns .el-button--danger:hover {
+  background: #d63228 !important;
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.35) !important;
+}
+
+/* 去除输入框默认边框（如果有输入框） */
+.el-message-box__input .el-input__wrapper {
+  background: rgba(0, 0, 0, 0.2) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
+/* 遮罩层 */
+.el-overlay {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px) !important;
 }

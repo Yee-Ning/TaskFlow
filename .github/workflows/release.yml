@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Check version
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          if ($env:GITHUB_REF_NAME -ne "v$version") { throw "Tag must match package.json version" }
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:win
+      - run: npm run smoke:win
+      - name: Publish installer
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          $installer = "release/$version/TaskFlow-Windows-$version-Setup.exe"
+          $checksum = "release/$version/SHA256SUMS.txt"
+          $hash = (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $(Split-Path -Leaf $installer)" | Set-Content -LiteralPath $checksum -Encoding utf8NoBOM
+          gh release create $env:GITHUB_REF_NAME $installer $checksum --verify-tag --draft --title "TaskFlow $env:GITHUB_REF_NAME" --notes "Windows x64 安装包。首次使用请注册本地账号；数据保存在本机。未进行代码签名，附 SHA-256 校验文件。"
+          if ($LASTEXITCODE -ne 0) { throw "Release upload failed" }
+          gh release edit $env:GITHUB_REF_NAME --draft=false --latest
+          if ($LASTEXITCODE -ne 0) { throw "Release publication failed" }

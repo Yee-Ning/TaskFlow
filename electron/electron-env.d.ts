@@ -2,7 +2,6 @@
 
 declare namespace NodeJS {
   interface ProcessEnv {
-    VSCODE_DEBUG?: 'true'
     /**
      * The built directory structure
      *
@@ -11,7 +10,7 @@ declare namespace NodeJS {
      * │ ├─┬ main
      * │ │ └── index.js    > Electron-Main
      * │ └─┬ preload
-     * │   └── index.mjs   > Preload-Scripts
+     * │   └── index.js    > Preload-Scripts
      * ├─┬ dist
      * │ └── index.html    > Electron-Renderer
      * ```

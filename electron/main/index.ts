@@ -1,11 +1,12 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
-import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
+import { app, BrowserWindow, shell } from 'electron'
 import path from 'node:path'
 import os from 'node:os'
 
-const require = createRequire(import.meta.url)
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+// ===== 数据库模块 =====
+import { initDatabase, closeDatabase } from '../database/index'
+import { registerIpcHandlers } from '../database/ipcHandlers'
+import { startReminderService, stopReminderService } from '../services/reminderService'
+import { loadShortcuts, registerAllShortcuts, unregisterAllShortcuts } from '../services/shortcutService'
 
 // The built directory structure
 //
@@ -39,21 +40,16 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let win: BrowserWindow | null = null
-const preload = path.join(__dirname, '../preload/index.mjs')
+const preload = path.join(__dirname, '../preload/index.js')
 const indexHtml = path.join(RENDERER_DIST, 'index.html')
 
 async function createWindow() {
   win = new BrowserWindow({
-    title: 'Main window',
-    icon: path.join(process.env.VITE_PUBLIC, 'favicon.ico'),
+    title: 'TaskFlow',
+    icon: path.join(process.env.VITE_PUBLIC, 'icon.png'),
     webPreferences: {
       preload,
-      // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
-      // nodeIntegration: true,
-
-      // Consider using contextBridge.exposeInMainWorld
-      // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
-      // contextIsolation: false,
+      webSecurity: false,
     },
   })
 
@@ -65,23 +61,37 @@ async function createWindow() {
     win.loadFile(indexHtml)
   }
 
-  // Test actively push message to the Electron-Renderer
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString())
-  })
-
   // Make all links open with the browser, not with the application
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https:')) shell.openExternal(url)
     return { action: 'deny' }
   })
-  // win.webContents.on('will-navigate', (event, url) => { }) #344
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  // 1. 初始化数据库
+  initDatabase()
+  // 2. 注册 IPC Handler（数据库操作通道）
+  registerIpcHandlers()
+  // 3. 创建窗口
+  createWindow()
+  // 4. 启动提醒轮询服务
+  startReminderService()
+  // 5. 加载快捷键配置并注册全局快捷键
+  const shortcuts = loadShortcuts()
+  registerAllShortcuts(shortcuts, (actionId) => {
+    win?.webContents.send('shortcut:triggered', actionId)
+  })
+})
 
 app.on('window-all-closed', () => {
   win = null
+  // 停止提醒服务
+  stopReminderService()
+  // 注销所有快捷键
+  unregisterAllShortcuts()
+  // 关闭数据库连接
+  closeDatabase()
   if (process.platform !== 'darwin') app.quit()
 })
 
@@ -99,22 +109,5 @@ app.on('activate', () => {
     allWindows[0].focus()
   } else {
     createWindow()
-  }
-})
-
-// New window example arg: new windows url
-ipcMain.handle('open-win', (_, arg) => {
-  const childWindow = new BrowserWindow({
-    webPreferences: {
-      preload,
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  })
-
-  if (VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${VITE_DEV_SERVER_URL}#${arg}`)
-  } else {
-    childWindow.loadFile(indexHtml, { hash: arg })
   }
 })
