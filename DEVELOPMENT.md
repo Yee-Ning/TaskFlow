@@ -42,4 +42,6 @@ Vue 通过 `src/api/database.ts` 调用预加载脚本暴露的 IPC；主进程�
 3. 创建与版本相同的标签，例如 `git tag v1.0.1`，然后 `git push origin v1.0.1`。
 4. Release 工作流检查版本、运行测试、构建安装包，生成 SHA-256 校验文件并发布到 GitHub Releases。
 
+已有标签也可以从 Actions 的 Release 工作流手动发布：选择 `main`，在 `tag` 中填写版本标签。工作流会检出该标签对应的源码，检查版本后打包。
+
 首次发布为 `v1.0.0`。GitHub Actions 使用仓库内置 `GITHUB_TOKEN`，无需另配发布令牌。当前仅发布 Windows x64；安装包未进行代码签名，也未集成应用内自动更新。
